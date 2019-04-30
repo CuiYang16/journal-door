@@ -1,4 +1,20 @@
 module.exports = {
+  router: {
+
+    routes: [
+      { name: "index", path: "/", component: "pages/index.vue" },
+      {
+        name: "journalList",
+        path: "/journalList",
+        component: "pages/journalList/index.vue"
+      },
+      {
+        name: "journalInfo",
+        path: "/journalInfo",
+        component: "pages/journalInfo/index.vue"
+      },
+    ]
+  },
   /*
    ** Headers of the page
    */
@@ -11,12 +27,17 @@ module.exports = {
         hid: "description",
         name: "description",
         content: "{{escape description }}"
-      },
-
+      }
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
-  plugins: [{ src: "~plugins/iview", ssr: true }],
+  plugins: [
+    { src: "~plugins/iview", ssr: true },
+    {
+      src: "~/plugins/axios",
+      ssr: false
+    }
+  ],
   /*
    ** Customize the progress bar color
    */
@@ -25,6 +46,8 @@ module.exports = {
    ** Build configuration
    */
   build: {
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
     /*
      ** Run ESLint on save
      */
@@ -45,8 +68,8 @@ module.exports = {
    */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios',
-    '@nuxtjs/proxy'
+    "@nuxtjs/axios",
+    "@nuxtjs/proxy"
   ],
   /*
    ** Axios module configuration

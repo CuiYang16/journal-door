@@ -13,6 +13,7 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "cookieparser": "^0.1.0",
     "axios": "^0.18.0",
     "iview": "^3.0.0",
     "nuxt": "^1.0.0",

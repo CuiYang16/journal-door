@@ -5,7 +5,6 @@
         <div class="top-menu">
           <Menu mode="horizontal" theme="light" active-name="1">
             <div class="layout-nav">
-             
               <MenuItem name="2" @click.native="userLogin">登录</MenuItem>
               <MenuItem name="3" @click.native="userRegister">注册</MenuItem>
               <Submenu name="4" v-show="false">
@@ -15,9 +14,7 @@
                 <MenuItem name="4-1">个人中心</MenuItem>
                 <MenuItem name="4-2">退出</MenuItem>
               </Submenu>
-              
             </div>
-            
           </Menu>
           <span class="welcome">欢迎光临此网站!</span>
         </div>
@@ -25,7 +22,7 @@
           <Row :gutter="120">
             <Col span="3" offset="2">
               <img
-                :src="require('E:/journal-img/2019-04-24_175623.png')"
+                :src="require('E:/journal-img/2019-04-30_153151.png')"
                 alt="require('E:/img/e1cf12c07bf6458992569e67927d767e.png')"
                 width="200"
                 height="80"
@@ -58,7 +55,7 @@
               <div class="nav-menu-item">
                 <MenuItem
                   name="1"
-                  style="padding:0 36px;border-left:1px solid #ffffff;border-right:1px solid #ffffff"
+                  style="padding:0 36px;border-left:1px solid #ffffff;border-right:1px solid #ffffff;background-color:#808695"
                 >
                   <Icon type="ios-people"/>全部期刊杂志分类
                 </MenuItem>
@@ -69,7 +66,7 @@
 
                 <MenuItem name="3">
                   <Icon type="ios-construct"/>
-                  <nuxt-link to="/journal-list">杂志期刊列表</nuxt-link>
+                  <nuxt-link to="/journalList">杂志期刊列表</nuxt-link>
                 </MenuItem>
               </div>
             </Menu>
@@ -86,7 +83,8 @@
     </Layout>
     <BackTop></BackTop>
     <div class="modals">
-      <Modal v-model="loginModal" title="注册" :mask-closable="false" width="450px">
+      <!-- 登录 -->
+      <Modal v-model="loginModal" title="登录" :mask-closable="false" width="450px">
         <div class="modal-content">
           <Form ref="loginForm" :model="loginForm" :rules="loginRule" :label-width="60">
             <FormItem prop="userName" label="用户名">
@@ -106,9 +104,15 @@
               </Input>
             </FormItem>
           </Form>
+
           <span
             class="go-register"
-            style="cursor: pointer; margin-left:360px;;color: #2b85e4;height:15px;line-height:15px;"
+            style="cursor: pointer; margin-left:280px;color: #2b85e4;height:15px;line-height:15px;"
+            @click="goResetPwd"
+          >忘记密码？</span>
+          <span
+            class="go-register"
+            style="cursor: pointer; color: #2b85e4;height:15px;line-height:15px;"
             @click="goRegister"
           >
             去注册
@@ -124,6 +128,7 @@
           >登录</Button>
         </div>
       </Modal>
+      <!-- 注册 -->
       <Modal v-model="registerModal" title="注册" :mask-closable="false" width="470px">
         <div class="modal-content">
           <Form ref="registerForm" :model="registerForm" :rules="registerRule" :label-width="80">
@@ -182,12 +187,56 @@
           >注册</Button>
         </div>
       </Modal>
+
+      <!-- 忘记密码 -->
+      <Modal v-model="resetPwdModal" title="忘记密码" :mask-closable="false" width="470px">
+        <div class="modal-content">
+          <Form ref="resetPwdForm" :model="resetPwdForm" :rules="registerRule" :label-width="80">
+            <FormItem prop="userPwd" label="密码">
+              <Input type="password" v-model="resetPwdForm.userPwd" placeholder="请输入密码">
+                <Icon type="ios-lock-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem prop="confirmPwd" label="确认密码">
+              <Input type="password" v-model="resetPwdForm.confirmPwd" placeholder="请输入确认密码">
+                <Icon type="ios-lock-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
+          </Form>
+          <span
+            class="go-login"
+            style="cursor: pointer;color: #2b85e4;height:15px;line-height:15px;"
+            @click="goLogin"
+          >
+            <Icon type="md-arrow-round-back"/>去登录
+          </span>
+          <span
+            class="go-register"
+            style="cursor: pointer; margin-left:330px; color: #2b85e4;height:15px;line-height:15px;"
+            @click="goRegister"
+          >
+            去注册
+            <Icon type="md-arrow-round-forward"/>
+          </span>
+        </div>
+        <div slot="footer">
+          <Button
+            type="primary"
+            long
+            @click="resetPwdSubmit('resetPwdForm')"
+            style="background-color: #2b85e4;border-color: #2b85e4;"
+          >确认修改</Button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
 
 <script>
+
+
 export default {
+  
   data() {
     const validateCCode = (rule, value, callback) => {
       if (value.toUpperCase() === "" || value.toUpperCase() != this.ccode) {
@@ -249,6 +298,10 @@ export default {
         userPhone: "",
         userEmail: "",
         userSex: ""
+      },
+      resetPwdForm: {
+        userPwd: "",
+        confirmPwd: ""
       },
       loginRule: {
         userName: [
@@ -339,9 +392,11 @@ export default {
       ],
       loginModal: false,
       registerModal: false,
+      resetPwdModal: false,
       ccode: ""
     };
   },
+  
   methods: {
     userLogin() {
       this.loginModal = true;
@@ -350,6 +405,7 @@ export default {
     goRegister() {
       this.loginModal = false;
       this.registerModal = true;
+      this.resetPwdModal = false;
     },
     userRegister() {
       this.registerModal = true;
@@ -357,6 +413,7 @@ export default {
     goLogin() {
       this.loginModal = true;
       this.registerModal = false;
+      this.resetPwdModal = false;
       this.generatedCode();
     },
     loginSubmit(name) {
@@ -376,6 +433,11 @@ export default {
           this.$Message.error("请正确填写注册信息!");
         }
       });
+    },
+    goResetPwd() {
+      this.loginModal = false;
+      this.registerModal = false;
+      this.resetPwdModal = true;
     },
     generatedCode() {
       const random = [
@@ -423,7 +485,10 @@ export default {
       }
       this.ccode = code;
     }
-  }
+  },
+  mounted() {
+    
+  },
 };
 </script>
 <style>
@@ -476,23 +541,23 @@ html {
 }
 
 .layout .ivu-layout-header {
-  background: #F5F7F9;
+  background: #f5f7f9;
   padding: 0px;
   height: 30px;
   line-height: 30px;
   font-size: 12px;
 }
-.layout .top-menu{
+.layout .top-menu {
   position: relative;
 }
-.layout .top-menu .welcome{
+.layout .top-menu .welcome {
   position: absolute;
-  top :0px;
+  top: 0px;
   right: 200px;
   z-index: 1000;
 }
 .layout .top-menu .ivu-menu-light {
-  background: #F5F7F9;
+  background: #f5f7f9;
 }
 .layout .top-menu .ivu-menu-horizontal {
   height: 30px;
@@ -560,7 +625,7 @@ html {
   color: #ffffff;
 }
 .layout .content-div {
-  margin-top: 200px;
+  margin-top: 190px;
   margin-bottom: 20px;
 }
 .layout .nav-menu .nav-menu-item {
