@@ -13,6 +13,11 @@ module.exports = {
         path: "/journalInfo",
         component: "pages/journalInfo/index.vue"
       },
+      {
+        name: "fairInfo",
+        path: "/fairInfo",
+        component: "pages/fairInfo/index.vue"
+      },
     ]
   },
   /*
@@ -35,6 +40,10 @@ module.exports = {
     { src: "~plugins/iview", ssr: true },
     {
       src: "~/plugins/axios",
+      ssr: false
+    },
+    {
+      src: "~/plugins/common",
       ssr: false
     }
   ],

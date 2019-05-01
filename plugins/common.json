@@ -1,0 +1,92 @@
+{
+    "levelList": [
+        {
+            "value": 1,
+            "label": "国家级期刊"
+        },
+        {
+            "value": 2,
+            "label": "省级级期刊"
+        },
+        {
+            "value": 3,
+            "label": "核心期刊"
+        }
+    ],
+    "cycleList": [
+        { "value": 1, "label": "周刊"
+        },
+        { "value": 2, "label": "旬刊"
+        },
+        { "value": 3, "label": "半月刊"
+        },
+        { "value": 4, "label": "月刊"
+        },
+        { "value": 5, "label": "双月刊"
+        },
+        { "value": 6, "label": "季刊"
+        },
+        { "value": 7, "label": "半年刊"
+        },
+        { "value": 8, "label": "年刊"
+        }
+    ],
+    "publishingAreaOptions": [
+        { "value": 1, "label": "北京", "short": "京" },
+        { "value": 2, "label": "天津", "short": "津" },
+        { "value": 3, "label": "河北", "short": "冀" },
+        { "value": 4, "label": "山西", "short": "晋" },
+        { "value": 5, "label": "内蒙古", "short": "蒙" },
+        { "value": 6, "label": "辽宁", "short": "辽" },
+        { "value": 7, "label": "吉林", "short": "吉" },
+        { "value": 8, "label": "黑龙江", "short": "黑" },
+        { "value": 9, "label": "上海", "short": "沪" },
+        { "value": 10, "label": "江苏", "short": "苏" },
+        { "value": 11, "label": "浙江省", "short": "浙" },
+        { "value": 12, "label": "安徽", "short": "皖" },
+        { "value": 13, "label": "福建", "short": "闽" },
+        { "value": 14, "label": "江西", "short": "赣" },
+        { "value": 15, "label": "山东", "short": "鲁" },
+        { "value": 16, "label": "河南", "short": "豫" },
+        { "value": 17, "label": "湖北", "short": "鄂" },
+        { "value": 18, "label": "湖南", "short": "湘" },
+        { "value": 19, "label": "广东", "short": "粤" },
+        { "value": 20, "label": "广西", "short": "桂" },
+        { "value": 21, "label": "海南", "short": "琼" },
+        { "value": 22, "label": "重庆", "short": "渝" },
+        { "value": 23, "label": "四川", "short": "川" },
+        { "value": 24, "label": "贵州", "short": "黔" },
+        { "value": 25, "label": "云南", "short": "滇" },
+        { "value": 26, "label": "西藏", "short": "藏" },
+        { "value": 27, "label": "陕西", "short": "陕" },
+        { "value": 28, "label": "甘肃省", "short": "甘" },
+        { "value": 29, "label": "青海", "short": "青" },
+        { "value": 30, "label": "宁夏", "short": "宁" },
+        { "value": 31, "label": "新疆", "short": "新" },
+        { "value": 32, "label": "台湾", "short": "台" },
+        { "value": 33, "label": "香港特别行政区", "short": "港" },
+        { "value": 34, "label": "澳门" }
+      ],
+      "languageOptions": [
+        { "value": 1, "label": "中文" },
+        { "value": 2, "label": "英文" },
+        { "value": 3, "label": "俄文" },
+        { "value": 4, "label": "法文" },
+        { "value": 5, "label": "日文" }
+      ],
+      "formatOptions": [
+        { "value": 1, "label": "2开", "desc": "A1" },
+        { "value": 2, "label": "4开", "desc": "A2" },
+        { "value": 3, "label": "8开", "desc": "A3" },
+        { "value": 4, "label": "16开", "desc": "A4" },
+        { "value": 5, "label": "32开", "desc": "A5" },
+        { "value": 6, "label": "64开", "desc": "A6" }
+      ],
+      "pubTimeList": [
+        { "value": 1, "label": "1个月内" },
+        { "value": 2, "label": "1-3个月" },
+        { "value": 3, "label": "3-6个月" },
+        { "value": 4, "label": "6-9个月" },
+        { "value": 5, "label": "1年以上" }
+      ]
+}

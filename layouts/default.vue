@@ -74,9 +74,14 @@
         </div>
       </Header>
       <Content>
-        <div class="content-div">
-          <nuxt/>
-        </div>
+        <Row>
+          <Col span="22" offset="1">
+            <div class="content-div">
+              <nuxt/>
+            </div>
+          </Col>
+          <Col span="1"></Col>
+        </Row>
       </Content>
 
       <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
@@ -233,10 +238,7 @@
 </template>
 
 <script>
-
-
 export default {
-  
   data() {
     const validateCCode = (rule, value, callback) => {
       if (value.toUpperCase() === "" || value.toUpperCase() != this.ccode) {
@@ -396,7 +398,7 @@ export default {
       ccode: ""
     };
   },
-  
+
   methods: {
     userLogin() {
       this.loginModal = true;
@@ -486,9 +488,7 @@ export default {
       this.ccode = code;
     }
   },
-  mounted() {
-    
-  },
+  mounted() {}
 };
 </script>
 <style>
