@@ -61,7 +61,7 @@
                       </li>
                       <li v-show="journalInfo.cn">
                         <span class="info-name-span">国内刊号：</span>
-                        {{(journalInfo.cn).toUpperCase()}}
+                        {{journalInfo.cn!=null?(journalInfo.cn).toUpperCase():''}}
                       </li>
                       <li v-show="journalInfo.issn">
                         <span class="info-name-span">国际刊号：</span>

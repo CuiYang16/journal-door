@@ -1,6 +1,6 @@
 import { publishingAreaOptions, languageOptions,cycleList,formatOptions,levelList } from "~/plugins/common.json";
 
-export function dateFormat(value) {
+export function dateFormat(value,type) {
   if (value != null) {
     var date = new Date(value); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + "-";
@@ -12,6 +12,9 @@ export function dateFormat(value) {
     var h = date.getHours() + ":";
     var m = date.getMinutes() + ":";
     var s = date.getSeconds();
+    if(type=='all'){
+      return Y + M + D +h+m+s;
+    }
     return Y + M + D;
   } else {
     return "--";
