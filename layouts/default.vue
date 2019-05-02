@@ -68,6 +68,10 @@
                   <Icon type="ios-construct"/>
                   <nuxt-link to="/journalList">杂志期刊列表</nuxt-link>
                 </MenuItem>
+                <MenuItem name="4">
+                  <Icon type="ios-construct"/>
+                  <nuxt-link to="/borrowInfo">借阅列表</nuxt-link>
+                </MenuItem>
               </div>
             </Menu>
           </template>

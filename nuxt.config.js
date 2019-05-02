@@ -18,6 +18,12 @@ module.exports = {
         path: "/fairInfo",
         component: "pages/fairInfo/index.vue"
       },
+      ,
+      {
+        name: "borrowInfo",
+        path: "/borrowInfo",
+        component: "pages/borrowInfo/index.vue"
+      },
     ]
   },
   /*

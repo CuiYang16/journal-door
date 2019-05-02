@@ -1,4 +1,4 @@
-import { publishingAreaOptions, languageOptions,cycleList,formatOptions } from "~/plugins/common.json";
+import { publishingAreaOptions, languageOptions,cycleList,formatOptions,levelList } from "~/plugins/common.json";
 
 export function dateFormat(value) {
   if (value != null) {
@@ -17,7 +17,16 @@ export function dateFormat(value) {
     return "--";
   }
 }
-
+export function levelFormat(value) {
+  let label;
+  for (var l of levelList) {
+    if (value == l.value) {
+      label = l.label;
+      break;
+    }
+  }
+  return label;
+}
 export function formatFormat(value) {
   let label;
   for (var l of formatOptions) {

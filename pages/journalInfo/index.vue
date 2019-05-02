@@ -125,7 +125,7 @@
                       <div v-html="journalInfo.description" class="info-desc"></div>
                     </div>
 
-                    <Button type="primary" long class="borrow-btn">借阅</Button>
+                    <Button type="primary" long class="borrow-btn" @click="borrowConfirm">借阅</Button>
                   </div>
                 </Col>
               </Row>
@@ -133,7 +133,13 @@
           </Col>
           <Col span="6">
             <div class="borrow-list">
-              <Card :bordered="false" class="borrow-card" title="借阅排行榜" icon="ios-options" dis-hover>
+              <Card
+                :bordered="false"
+                class="borrow-card"
+                title="借阅排行榜"
+                icon="ios-options"
+                dis-hover
+              >
                 <CellGroup>
                   <Cell title="Only show titles"/>
                   <Cell title="Display label content" label="label content"/>
@@ -148,7 +154,6 @@
                   <Cell title="Only show titles"/>
                   <Cell title="Display label content" label="label content"/>
                   <Cell title="Display right content" extra="details"/>
-
                 </CellGroup>
               </Card>
             </div>
@@ -156,23 +161,71 @@
         </Row>
       </Card>
     </div>
+
+    <div>
+      <Modal
+        v-model="borrowModal"
+        title="确认借阅"
+        :loading="loading"
+        @on-ok="borrwOK"
+        :mask-closable="false"
+      >
+        <p>
+          请确认您要借阅的杂志期刊是：
+          <span style="font-size:14px;font-weight:600;">{{journalInfo.journalName}}</span>
+        </p>
+        <br>
+        <p>请在{{twoMonthAfter()}}前归还，否则将按逾期一天0.5元缴纳罚金！！！</p>
+      </Modal>
+    </div>
   </div>
 </template>
 
 <script>
-
-import { dateFormat,formatFormat,cycleFormat,languageFormat,areaFormat } from "~/plugins/common.js";
-
-
+import {
+  dateFormat,
+  formatFormat,
+  cycleFormat,
+  languageFormat,
+  areaFormat
+} from "~/plugins/common.js";
+import { getData } from "~/plugins/axios.js";
 export default {
   data() {
     return {
       journalInfo: {},
       showImgName: "",
-
+      borrowModal: false,
+      loading: true
     };
   },
   methods: {
+    borrowConfirm() {
+      this.borrowModal = true;
+    },
+    async borrwOK() {
+      var { data } = await getData(
+        "/jm-journal/journal-borrow/borrow-journal",
+        "post",
+        {
+          journalId: this.journalInfo.journalId,
+          userId: 1
+        }
+      );
+      if (data == 1) {
+        this.$Notice.success({
+          title: "借阅成功",
+          desc: "借阅成功，返回杂志期刊列表页！"
+        });
+      } else {
+        this.$Notice.error({
+          title: "借阅失败",
+          desc: "借阅失败，请刷新重试！"
+        });
+      }
+      this.$router.push({path:"/journalList",query:{}});
+      this.borrowModal = false;
+    },
     imgClick(imgName) {
       console.log(imgName);
       this.showImgName = imgName;
@@ -191,9 +244,26 @@ export default {
     },
     dateFormat: function(value) {
       return dateFormat(value);
+    },
+    twoMonthAfter() {
+      var date = new Date();
+      var seperator1 = "-";
+      var year = date.getFullYear();
+      var month = date.getMonth() + 3;
+      var strDate = date.getDate();
+      if (month >= 1 && month <= 9) {
+        month = "0" + month;
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+      }
+      var currentdate = year + seperator1 + month + seperator1 + strDate;
+      return currentdate;
     }
   },
   created() {
+    console.log(this.$route.matched);
+    
     this.journalInfo = JSON.parse(this.$route.query.journal);
   },
   beforeRouteEnter(to, from, next) {
@@ -220,7 +290,7 @@ export default {
 .journal-info .journal-show .info {
   padding-right: 10px;
 }
-.journal-info .journal-show .borrow-list{
+.journal-info .journal-show .borrow-list {
   min-height: 560px;
   border: 1px solid #e8eaec;
 }
@@ -264,7 +334,7 @@ export default {
   width: 80px;
   text-align: right;
   display: inline-block;
-  color: #c0c4cc;
+  font-weight: 600;
 }
 .journal-info .journal-show .info .info-right ul {
   margin-top: 10px;

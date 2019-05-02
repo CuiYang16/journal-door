@@ -95,22 +95,22 @@
                             </nuxt-link>
                           </div>
                           <div class="hot-show-li-char">
-                            <span class="hot-show-li-char-span">杂志名称:</span>
-                            <span class="journal-desc">{{nj.journalName}}</span>
-                            <br>
-                            <span class="hot-show-li-char-span">出版社：</span>
-                            <span class="journal-desc">{{nj.publishingHouse}}</span>
-                            <br>
+                            
+                            <h3 style="padding: 0 0 10px 10px">{{nj.journalName}}</h3>
                             <span class="hot-show-li-char-span">杂志级别：</span>
                             <span class="journal-desc">{{levelFormat(nj.journalLevel)}}</span>
                             <br>
                             <span class="hot-show-li-char-span">杂志类别：</span>
                             <span class="journal-desc">{{nj.type.typeName}}</span>
                             <br>
+                            <span class="hot-show-li-char-span">出版社：</span>
+                            <span class="journal-desc">{{nj.publishingHouse}}</span>
+                            <br>
                             <Button
                               type="primary"
                               ghost
-                              style="margin:8px 0 0 100px"
+                              size="small"
+                              style="margin:6px 0 0 10px"
                               @click="checkJournal(nj)"
                             >查看详情</Button>
                             <br>
@@ -376,11 +376,13 @@ export default {
   padding: 10px 0px;
 }
 .home-center .hot-recommend .hot-show-li .hot-show-li-char-span {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   margin-right: 10px;
   line-height: 25px;
-  color: #17233d;
+  text-align: right;
+  width: 70px;
+  display: inline-block;
 }
 .home-center .hot-recommend .hot-show-li .hot-show-li-char-p {
   overflow: hidden;
@@ -405,6 +407,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 12px;
 }
 
 .home-center .borrow-card {
