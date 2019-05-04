@@ -103,8 +103,8 @@
                             <span class="hot-show-li-char-span">杂志类别：</span>
                             <span class="journal-desc">{{nj.type.typeName}}</span>
                             <br>
-                            <span class="hot-show-li-char-span">出版社：</span>
-                            <span class="journal-desc">{{nj.publishingHouse}}</span>
+                            <span class="hot-show-li-char-span">期号：</span>
+                            <span class="journal-desc">{{nj.issue}}</span>
                             <br>
                             <Button
                               type="primary"

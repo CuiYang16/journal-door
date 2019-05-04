@@ -125,7 +125,7 @@
                       <div v-html="journalInfo.description" class="info-desc"></div>
                     </div>
 
-                    <Button type="primary" long class="borrow-btn" @click="borrowConfirm">借阅</Button>
+                    <Button type="primary" long class="borrow-btn" @click="borrowConfirm" :disabled="journalInfo.inventory<=0">借阅</Button>
                   </div>
                 </Col>
               </Row>

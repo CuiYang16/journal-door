@@ -11,22 +11,24 @@
       <Table border :columns="boorowColumns" :data="borrows">
         <template slot-scope="{ row }" slot="borrowTime">{{ dateFormat(row.borrowTime) }}</template>
         <template slot-scope="{ row }" slot="returnTime">{{ dateFormat(row.returnTime) }}</template>
+        <template slot-scope="{ row }" slot="realityReturn">{{ dateFormat(row.realityReturn) }}</template>
         <template slot-scope="{ row }" slot="realityDays">{{ realityDay(row.borrowTime) }}</template>
         <template slot-scope="{ row }" slot="isOverdue">
           <Tag
             :color="row.returnTime>new Date()?'success':'error'"
-          >{{ row.returnTime>new Date()?'否':'是' }}</Tag>
+          >{{row.isOverdue==false?(row.returnTime>new Date()?'否':'是'):row.isOverdue==true?'是':'否' }}</Tag>
         </template>
         <template slot-scope="{ row }" slot="overdueDays">{{ overDay(row.returnTime) }}</template>
         <template slot-scope="{ row }" slot="penalty">{{ row.penalty }}</template>
         <template slot-scope="{ row }" slot="isPayment">
-          <Tag :color="row.isPayment==false?'success':'error'">{{ row.isPayment==false?'否':'是' }}</Tag>
+          <Tag
+            :color="row.isPayment==false?'success':'error'"
+          >{{row.penalty>0? (row.isPayment==false?'否':'是'):'--' }}</Tag>
         </template>
 
         <template slot-scope="{ row }" slot="journal">{{ row.journalDetails.journalName }}</template>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="primary" size="small" style="margin-right: 5px">View</Button>
-          <Button type="error" size="small">Delete</Button>
+          <Button type="error" size="small" @click="delBorrow(row)">删除</Button>
         </template>
       </Table>
     </div>
@@ -41,6 +43,20 @@
         @on-change="pageChange"
         @on-page-size-change="pageSizeChange"
       />
+    </div>
+    <div>
+      <Modal
+        v-model="delBorrowModal"
+        title="确认删除借阅记录"
+        @on-ok="delBorrowSubmit"
+        :mask-closable="false"
+      >
+        <p>
+          请确认您要删除借阅
+          <span style="font-size:14px;font-weight:600;">{{delRow.journalDetails!=null?delRow.journalDetails.journalName:""}}</span>
+          得记录吗？
+        </p>
+      </Modal>
     </div>
   </div>
 </template>
@@ -62,6 +78,8 @@ export default {
         pageSize: 10,
         total: 0
       },
+      delBorrowModal: false,
+      delRow: {},
       boorowColumns: [
         {
           title: "借阅开始时间",
@@ -73,6 +91,12 @@ export default {
           title: "应归还时间",
           slot: "returnTime",
           key: "returnTime",
+          align: "center"
+        },
+        {
+          title: "实际归还时间",
+          slot: "realityReturn",
+          key: "realityReturn",
           align: "center"
         },
         {
@@ -198,9 +222,9 @@ export default {
           align: "center"
         },
         {
-          title: "Action",
+          title: "删除记录",
           slot: "action",
-          width: 150,
+          width: 100,
           align: "center"
         }
       ],
@@ -220,6 +244,36 @@ export default {
       this.pageInfo.currentPage = data.pageNum;
       this.pageInfo.pageSize = data.pageSize;
       this.pageInfo.total = data.total;
+    },
+    delBorrow(row) {
+      this.delRow = row;
+      this.delBorrowModal = true;
+    },
+    async delBorrowSubmit() {
+      this.delBorrowModal = false;
+      var { data } = await getData(
+        "/jm-journal/journal-borrow/del-borrow-door",
+        "put",
+        { borrowId: this.delRow.borrowId }
+      );
+      if (data > 0) {
+        this.getBorrows(
+          1,
+          this.pageInfo.currentPage,
+          this.pageInfo.pageSize,
+          this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
+          this.isPayment == "1" ? 1 : this.isPayment == "0" ? 0 : 2
+        );
+        this.$Notice.success({
+          title: "成功",
+          desc: "删除成功！"
+        });
+      } else {
+        this.$Notice.error({
+          title: "失败",
+          desc: "删除失败，请刷新重试！"
+        });
+      }
     },
     pageChange(value) {
       this.getBorrows(
@@ -246,9 +300,9 @@ export default {
       var cha = new Date().getTime() - new Date(value).getTime();
       return Math.floor(cha / (24 * 3600 * 1000));
     },
-    overDay(value){
+    overDay(value) {
       var cha = new Date().getTime() - new Date(value).getTime();
-      if(cha<=0){
+      if (cha <= 0) {
         return 0;
       }
       return Math.floor(cha / (24 * 3600 * 1000));
@@ -268,7 +322,7 @@ export default {
 .journal-borrow .borrow-table {
   padding-top: 10px;
 }
-.page-info{
+.page-info {
   margin: 15px 0;
   float: right;
 }

@@ -54,7 +54,7 @@
           <div class="fair-desc">
             <span class="item-desc">书展简介：</span>
             <div v-html="fairInfo.fairDescribe" class="desc-info"></div>
-            <Button type="primary" long class="fair-btn" size="large">参加书展</Button>
+            <Button type="primary" long class="fair-btn" size="large" @click="joinFair">参加书展</Button>
           </div>
         </div>
       </Card>
@@ -64,7 +64,7 @@
 
 <script>
 import { dateFormat } from "~/plugins/common.js";
-
+import { getData } from "~/plugins/axios.js";
 export default {
   data() {
     return {
@@ -72,6 +72,32 @@ export default {
     };
   },
   methods: {
+    async joinFair() {
+      var { data } = await getData(
+        "/jm-fair/journal-fair/insert/fair-user",
+        "post",
+        { fairInformationId: this.fairInfo.fairInformationId, userId: 1 }
+      );
+      if (data == 50001) {
+        this.$Notice.error({
+          title: "失败",
+          desc: "您已经参加本书展！"
+        });
+        this.$router.push({ path: "/journalList", query: {} });
+      }
+      if (data == 1) {
+        this.$Notice.success({
+          title: "成功",
+          desc: "参加" + this.fairInfo.fairName + "书展成功！"
+        });
+        this.$router.push({ path: "/journalList", query: {} });
+      } else {
+        this.$Notice.error({
+          title: "失败",
+          desc: "参加本书展失败，请刷新重试！"
+        });
+      }
+    },
     dateFormats(value) {
       return dateFormat(value);
     }
