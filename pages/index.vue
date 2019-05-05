@@ -68,12 +68,7 @@
                 <Card :bordered="false" dis-hover>
                   <Carousel autoplay loop :height="350">
                     <CarouselItem v-for="s in slides" :key="s.slideId">
-                      <img
-                        :src="'/journal-img/'+s.name"
-                        alt="/journal-img/1555990714772-journal-fair.jpg"
-                        height="350"
-                        width="100%"
-                      >
+                      <img :src="'/slide-img/'+s.name" alt="没有啦" height="350" width="100%">
                     </CarouselItem>
                   </Carousel>
                   <div class="hot-recommend">
@@ -95,7 +90,6 @@
                             </nuxt-link>
                           </div>
                           <div class="hot-show-li-char">
-                            
                             <h3 style="padding: 0 0 10px 10px">{{nj.journalName}}</h3>
                             <span class="hot-show-li-char-span">杂志级别：</span>
                             <span class="journal-desc">{{levelFormat(nj.journalLevel)}}</span>
@@ -140,39 +134,13 @@
                 <div class="borrow-cell">
                   <Card :bordered="false" class="borrow-card" title="借阅排行榜" icon="ios-options">
                     <CellGroup>
-                      <Cell title="Only show titles"/>
-                      <Cell title="Display label content" label="label content"/>
-                      <Cell title="Display right content" extra="details"/>
-                      <Cell title="Link" extra="details" to="/components/button"/>
                       <Cell
-                        title="Open link in new window"
-                        to="/components/button"
-                        target="_blank"
+                        :title="jb.journalName"
+                        v-for="jb in journalBorrow"
+                        :key="jb.journalId"
+                        :extra="'借阅量：'+String(jb.total)"
+                        :to="{path:'/journalInfo', query: { journal: JSON.stringify(jb)}}"
                       />
-                      <Cell title="Disabled" disabled/>
-                      <Cell title="Selected" selected/>
-                      <Cell title="With Badge" to="/components/badge">
-                        <Badge :count="10" slot="extra"/>
-                      </Cell>
-                      <Cell title="Only show titles"/>
-                      <Cell title="Display label content" label="label content"/>
-                      <Cell title="Display right content" extra="details"/>
-                      <Cell title="Link" extra="details" to="/components/button"/>
-                      <Cell
-                        title="Open link in new window"
-                        to="/components/button"
-                        target="_blank"
-                      />
-                      <Cell title="Disabled" disabled/>
-                      <Cell title="Selected" selected/>
-                      <Cell title="With Badge" to="/components/badge">
-                        <Badge :count="10" slot="extra"/>
-                      </Cell>
-                      <Cell title="Disabled" disabled/>
-                      <Cell title="Selected" selected/>
-                      <Cell title="With Badge" to="/components/badge">
-                        <Badge :count="10" slot="extra"/>
-                      </Cell>
                     </CellGroup>
                   </Card>
                 </div>
@@ -207,11 +175,19 @@ export default {
       {}
     );
     const newJournals = data;
+
+    var { data } = await getData(
+      "/jm-journal/journal-detail/get/journal-borrow",
+      "get",
+      {}
+    );
+    const journalBorrow = data;
     return {
       fairInfos: fairInfos,
       fTypes: fTypes,
       slides: slides,
-      newJournals: newJournals
+      newJournals: newJournals,
+      journalBorrow: journalBorrow
     };
   },
   data() {
@@ -221,7 +197,7 @@ export default {
         level: "",
         cycle: "",
         area: "",
-        time:""
+        time: ""
       },
       levelList: levelList,
       cycleList: cycleList
@@ -234,7 +210,7 @@ export default {
         level: "",
         cycle: "",
         area: "",
-        time:""
+        time: ""
       };
       if (type == "type") {
         this.checkList.type = value;
@@ -248,7 +224,10 @@ export default {
       if (type == "level") {
         this.checkList.level = value;
       }
-     this.$router.push({path:"/journalList",query:{checkValue:JSON.stringify(this.checkList)}});
+      this.$router.push({
+        path: "/journalList",
+        query: { checkValue: JSON.stringify(this.checkList) }
+      });
     },
     checkJournal(journaInfo) {
       this.$router.push({

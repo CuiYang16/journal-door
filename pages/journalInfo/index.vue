@@ -141,19 +141,13 @@
                 dis-hover
               >
                 <CellGroup>
-                  <Cell title="Only show titles"/>
-                  <Cell title="Display label content" label="label content"/>
-                  <Cell title="Display right content" extra="details"/>
-                  <Cell title="Link" extra="details" to="/components/button"/>
-                  <Cell title="Open link in new window" to="/components/button" target="_blank"/>
-                  <Cell title="Disabled" disabled/>
-                  <Cell title="Selected" selected/>
-                  <Cell title="With Badge" to="/components/badge">
-                    <Badge :count="10" slot="extra"/>
-                  </Cell>
-                  <Cell title="Only show titles"/>
-                  <Cell title="Display label content" label="label content"/>
-                  <Cell title="Display right content" extra="details"/>
+                  <Cell
+                        :title="jb.journalName"
+                        v-for="jb in journalBorrows.slice(0,10)"
+                        :key="jb.journalId"
+                        :extra="'借阅量：'+String(jb.total)"
+                        :to="{path:'/journalInfo', query: { journal: JSON.stringify(jb)}}"
+                      />
                 </CellGroup>
               </Card>
             </div>
@@ -196,7 +190,8 @@ export default {
       journalInfo: {},
       showImgName: "",
       borrowModal: false,
-      loading: true
+      loading: true,
+      journalBorrows:[]
     };
   },
   methods: {
@@ -225,6 +220,14 @@ export default {
       }
       this.$router.push({path:"/journalList",query:{}});
       this.borrowModal = false;
+    },
+    async getBorrowList(){
+      var { data } = await getData(
+      "/jm-journal/journal-detail/get/journal-borrow",
+      "get",
+      {}
+    );
+    this.journalBorrows = data;
     },
     imgClick(imgName) {
       console.log(imgName);
@@ -262,16 +265,12 @@ export default {
     }
   },
   created() {
-    console.log(this.$route.matched);
-    
     this.journalInfo = JSON.parse(this.$route.query.journal);
+    this.getBorrowList();
   },
-  beforeRouteEnter(to, from, next) {
-    next();
-  },
+
   beforeRouteUpdate(to, from, next) {
     this.journalInfo = JSON.parse(to.query.journal);
-
     next();
   }
 };

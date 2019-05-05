@@ -24,6 +24,12 @@ module.exports = {
         path: "/borrowInfo",
         component: "pages/borrowInfo/index.vue"
       },
+      {
+        name: "searchResultInfo",
+        path: "/searchResultInfo",
+        component: "pages/searchResultInfo/index.vue",
+	    meta: {requiresAuth: true}
+      },
     ]
   },
   /*

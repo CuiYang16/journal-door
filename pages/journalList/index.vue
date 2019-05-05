@@ -366,7 +366,7 @@ export default {
       }
       this.getJournal(1, this.pageInfo.pageSize,this.dateSort);
     },
-    async getJournal(currentPage, pageSize,dateSort) {
+    async getJournal(currentPage, pageSize,dateSort,searchValue) {
       var { data } = await getData(
         "/jm-journal/journal-detail/get/check-journal",
         "post",
@@ -374,7 +374,8 @@ export default {
           checkValue: this.checkValue,
           currentPage: currentPage,
           pageSize: pageSize,
-          dateSort:dateSort
+          dateSort:dateSort,
+          searchValue:searchValue
         }
       );
       this.journalData = data.list;
@@ -438,6 +439,7 @@ export default {
       this.checkValue = JSON.parse(this.$route.query.checkValue);
     }
     this.getJournal(this.pageInfo.currentPage, this.pageInfo.pageSize,this.dateSort);
+
   },
   beforeRouteUpdate(to, from, next) {
     if (!this.$route.query.checkValue) {

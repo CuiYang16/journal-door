@@ -18,6 +18,7 @@
           </Menu>
           <span class="welcome">欢迎光临此网站!</span>
         </div>
+
         <div class="content-row">
           <Row :gutter="120">
             <Col span="3" offset="2">
@@ -43,7 +44,7 @@
                   <input type="text" class="q" placeholder="请输入关键词" v-model="searchValue">
                 </div>
                 <div class="r">
-                  <button type="submit" class="s">搜索</button>
+                  <button type="submit" class="s" @click="searchJournal">搜索</button>
                 </div>
               </div>
             </Col>
@@ -385,15 +386,11 @@ export default {
         },
         {
           value: "2",
-          label: "类别"
+          label: "国内刊号"
         },
         {
           value: "3",
           label: "主办单位"
-        },
-        {
-          value: "4",
-          label: "级别"
         }
       ],
       loginModal: false,
@@ -490,6 +487,15 @@ export default {
         code += random[index];
       }
       this.ccode = code;
+    },
+    searchJournal() {
+      this.$router.push({
+        path: "/searchResultInfo",
+        query: {
+          searchValue: this.searchSelectValue + "-*-" + this.searchValue.trim()
+        }
+      });
+      this.searchValue="";
     }
   },
   mounted() {}
@@ -514,7 +520,9 @@ html {
   box-sizing: border-box;
   margin: 0;
 }
-
+.ivu-layout-content {
+  clear: both;
+}
 .button--green {
   display: inline-block;
   border-radius: 4px;
@@ -609,13 +617,16 @@ html {
 }
 
 .layout .content-row {
-  padding-top: 25px;
-  line-height: 80px;
+  clear: both;
+  padding-top: 20px;
+  line-height: 60px;
+  position: relative;
   z-index: 9999;
 }
 
 .layout .nav-menu {
   width: 100%;
+  clear: both;
 }
 .layout .nav-menu .ivu-menu-horizontal {
   height: 50px;
@@ -629,8 +640,9 @@ html {
   color: #ffffff;
 }
 .layout .content-div {
-  margin-top: 190px;
+  margin-top: 175px;
   margin-bottom: 20px;
+  z-index: 999;
 }
 .layout .nav-menu .nav-menu-item {
   padding: 0 4.16666667%;
@@ -659,7 +671,7 @@ html {
   font-size: 14px;
   color: #666;
   width: 95%;
-  height: 18px;
+  height: 25px;
   margin: 3px;
 }
 .layout .search .r {
