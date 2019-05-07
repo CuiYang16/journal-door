@@ -62,6 +62,7 @@
 </template>
 
 <script>
+
 import { getData } from "~/plugins/axios.js";
 import {
   dateFormat,

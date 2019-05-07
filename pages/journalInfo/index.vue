@@ -184,6 +184,7 @@ import {
   areaFormat
 } from "~/plugins/common.js";
 import { getData } from "~/plugins/axios.js";
+import { getToken} from "~/middleware/auth";
 export default {
   data() {
     return {
@@ -196,10 +197,19 @@ export default {
   },
   methods: {
     borrowConfirm() {
+      if(getToken()!=null&&getToken()!=""){
       this.borrowModal = true;
+      }else{
+        this.$Notice.error({
+          title: "失败",
+          desc: "借阅失败，请登录后借阅！"
+        });
+        this.$store.commit("SET_LOGIN_MODAL",true);
+      }
     },
     async borrwOK() {
-      var { data } = await getData(
+      
+        var { data } = await getData(
         "/jm-journal/journal-borrow/borrow-journal",
         "post",
         {
@@ -220,6 +230,8 @@ export default {
       }
       this.$router.push({path:"/journalList",query:{}});
       this.borrowModal = false;
+      
+      
     },
     async getBorrowList(){
       var { data } = await getData(

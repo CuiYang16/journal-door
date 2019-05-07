@@ -1,17 +1,13 @@
 import axios from "axios";
+import { getToken} from "~/middleware/auth";
 
 export function fetch(config) {
   //返回promise对象
   return new Promise((resolve, reject) => {
-    if (config.auth.isAunthed) {
+ 
       var headers = {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + config.auth.accessToken
-      };
-    } else {
-      var headers = {
-        "Content-Type": "application/json"
-      };
+
     }
 
     const instance = axios.create({

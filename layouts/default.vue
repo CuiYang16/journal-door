@@ -5,14 +5,15 @@
         <div class="top-menu">
           <Menu mode="horizontal" theme="light" active-name="1">
             <div class="layout-nav">
-              <MenuItem name="2" @click.native="userLogin">登录</MenuItem>
-              <MenuItem name="3" @click.native="userRegister">注册</MenuItem>
-              <Submenu name="4" v-show="false">
+              <MenuItem name="2" @click.native="userLogin" v-if="!(avatar||name)">登录</MenuItem>
+              <MenuItem name="3" @click.native="userRegister" v-if="!(avatar||name)">注册</MenuItem>
+              <Submenu name="4" v-if="avatar&&name">
                 <template slot="title">
-                  <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" size="small"/>&nbsp;用户名
+                  <Avatar :src="avatar" size="small"/>
+                  &nbsp;{{name}}
                 </template>
                 <MenuItem name="4-1">个人中心</MenuItem>
-                <MenuItem name="4-2">退出</MenuItem>
+                <MenuItem name="4-2" @click.native="loginOut">退出登录</MenuItem>
               </Submenu>
             </div>
           </Menu>
@@ -94,7 +95,13 @@
     <BackTop></BackTop>
     <div class="modals">
       <!-- 登录 -->
-      <Modal v-model="loginModal" title="登录" :mask-closable="false" width="450px">
+      <Modal
+        v-model="loginModal"
+        title="登录"
+        :mask-closable="false"
+        width="450px"
+        @on-cancel="onCancel"
+      >
         <div class="modal-content">
           <Form ref="loginForm" :model="loginForm" :rules="loginRule" :label-width="60">
             <FormItem prop="userName" label="用户名">
@@ -179,6 +186,43 @@
                 <Icon type="ios-mail-outline" slot="prepend"></Icon>
               </Input>
             </FormItem>
+            <FormItem label="用户头像">
+              <template>
+                <div class="demo-upload-list" v-for="item in uploadList" :key="item.url">
+                  <template v-if="item.status === 'finished'">
+                    <img :src="item.url" width="60" height="60">
+                    <div class="demo-upload-list-cover">
+                      <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+                      <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+                    </div>
+                  </template>
+                  <template v-else v-show="uploadList.length==0">
+                    <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+                  </template>
+                </div>
+                <Upload
+                  ref="upload"
+                  :show-upload-list="false"
+                  :default-file-list="defaultList"
+                  :on-success="handleSuccess"
+                  :format="['jpg','jpeg','png']"
+                  :max-size="512"
+                  :on-format-error="handleFormatError"
+                  :on-exceeded-size="handleMaxSize"
+                  :before-upload="handleBeforeUpload"
+                  type="drag"
+                  action="http://127.0.0.1:8888/jm-user/user/upload/door-user-img"
+                  style="display: inline-block;width:58px;"
+                >
+                  <div style="width: 58px;height:58px;line-height: 58px;">
+                    <Icon type="ios-camera" size="20"></Icon>
+                  </div>
+                </Upload>
+                <Modal title="View Image" v-model="visible">
+                  <img :src="'/avatar-img/' + imgName" v-if="visible" style="width: 100%">
+                </Modal>
+              </template>
+            </FormItem>
           </Form>
           <span
             class="go-login"
@@ -201,7 +245,7 @@
       <!-- 忘记密码 -->
       <Modal v-model="resetPwdModal" title="忘记密码" :mask-closable="false" width="470px">
         <div class="modal-content">
-          <Form ref="resetPwdForm" :model="resetPwdForm" :rules="registerRule" :label-width="80">
+          <Form ref="resetPwdForm" :model="resetPwdForm" :rules="resetPwdRule" :label-width="80">
             <FormItem prop="userPwd" label="密码">
               <Input type="password" v-model="resetPwdForm.userPwd" placeholder="请输入密码">
                 <Icon type="ios-lock-outline" slot="prepend"></Icon>
@@ -243,7 +287,13 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import getters from "~/store/getters";
+import { getData } from "~/plugins/axios.js";
 export default {
+  computed: {
+    ...mapGetters(["name", "avatar"])
+  },
   data() {
     const validateCCode = (rule, value, callback) => {
       if (value.toUpperCase() === "" || value.toUpperCase() != this.ccode) {
@@ -377,6 +427,29 @@ export default {
           }
         ]
       },
+      resetPwdRule: {
+        userPwd: [
+          {
+            required: true,
+            validator: validatePwd,
+            trigger: "blur"
+          }
+        ],
+        confirmPwd: [
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              var pPattern = /^.*(?=.{8,12})(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*?_]).*$/;
+              if (!pPattern.test(value) || this.resetPwdForm.userPwd != value) {
+                callback(new Error("密码不一致，请重新确认！"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur"
+          }
+        ]
+      },
       searchValue: "",
       searchSelectValue: "1",
       selectValue: [
@@ -396,17 +469,47 @@ export default {
       loginModal: false,
       registerModal: false,
       resetPwdModal: false,
-      ccode: ""
+      ccode: "",
+      defaultList: [],
+      imgName: "",
+      visible: false,
+      uploadList: [],
+      file: ""
     };
   },
-
+  watch: {
+    "$store.getters.loginModal": {
+      handler(newValue) {
+        this.loginModal = newValue;
+        this.generatedCode();
+      },
+      deep: true
+    },
+    "$store.getters.registerModal": {
+      handler(newValue) {
+        this.registerModal = newValue;
+      },
+      deep: true
+    },
+    "$store.getters.resetPwdModal": {
+      handler(newValue) {
+        this.resetPwdModal = newValue;
+      },
+      deep: true
+    }
+  },
   methods: {
     userLogin() {
-      this.loginModal = true;
+      // this.loginModal = true;
       this.generatedCode();
+      this.$store.commit("SET_LOGIN_MODAL", true);
+    },
+    onCancel() {
+      this.$store.commit("SET_LOGIN_MODAL", false);
     },
     goRegister() {
-      this.loginModal = false;
+      //this.loginModal = false;
+      this.$store.commit("SET_LOGIN_MODAL", false);
       this.registerModal = true;
       this.resetPwdModal = false;
     },
@@ -414,7 +517,8 @@ export default {
       this.registerModal = true;
     },
     goLogin() {
-      this.loginModal = true;
+      // this.loginModal = true;
+      this.$store.commit("SET_LOGIN_MODAL", true);
       this.registerModal = false;
       this.resetPwdModal = false;
       this.generatedCode();
@@ -422,11 +526,37 @@ export default {
     loginSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          this.$Message.success("Success!");
+          this.$store
+            .dispatch("user/userLogin", this.loginForm)
+            .then(() => {
+              //this.loginModal = false;
+              this.$store.commit("SET_LOGIN_MODAL", false);
+              this.$nextTick(function() {
+                this.$refs[name].resetFields();
+              });
+            })
+            .catch(() => {
+              this.$Message.error("登录失败，请刷新重试!!");
+            });
+          this.$Message.success("登录成功!");
         } else {
           this.$Message.error("请正确填写登录信息!!");
         }
       });
+    },
+    loginOut() {
+      this.$store
+        .dispatch("user/logout")
+        .then(() => {
+          this.$router.push({
+            path: "/",
+            query: {}
+          });
+          this.$Message.success("退出登录成功!");
+        })
+        .catch(() => {
+          this.$Message.error("退出登录失败，请刷新重试!!");
+        });
     },
     registerSubmit(name) {
       this.$refs[name].validate(valid => {
@@ -438,9 +568,16 @@ export default {
       });
     },
     goResetPwd() {
-      this.loginModal = false;
+      // this.loginModal = false;
+      this.$store.commit("SET_LOGIN_MODAL", false);
       this.registerModal = false;
       this.resetPwdModal = true;
+    },
+    resetPwdSubmit(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+        }
+      });
     },
     generatedCode() {
       const random = [
@@ -495,7 +632,60 @@ export default {
           searchValue: this.searchSelectValue + "-*-" + this.searchValue.trim()
         }
       });
-      this.searchValue="";
+      this.searchValue = "";
+    },
+    handleView(name) {
+      this.imgName = name;
+      this.visible = true;
+    },
+    handleRemove(file) {
+
+      getData("/jm-user/user/del-door-user", "delete", { fileName: file.name }).
+        then(res => {
+          if (res.data== 1) {
+            this.uploadList = [];
+          } else {
+            this.$Notice.warning({
+              title: "删除失败",
+              desc: file.name + "删除失败，请刷新重试！"
+            });
+          }
+        }).catch(error => {
+          this.$Notice.warning({
+            title: "删除失败",
+            desc: file.name + "删除失败，请刷新重试1！"
+          });
+        });
+    },
+    handleSuccess(res, file) {
+      console.log(res);
+      this.uploadList = [];
+      this.uploadList.push({
+        url: "/avatar-img/" + res.str,
+        name: res.str,
+        status: "finished"
+      });
+    },
+    handleFormatError(file) {
+      this.$Notice.warning({
+        title: "The file format is incorrect",
+        desc: file.name + " 类型不正确，直接搜jpg/jpeg/png"
+      });
+    },
+    handleMaxSize(file) {
+      this.$Notice.warning({
+        title: "文件大小超限",
+        desc: file.name + "文件大小超限, 最大500K."
+      });
+    },
+    handleBeforeUpload(file) {
+      const check = this.uploadList.length < 2;
+      if (!check) {
+        this.$Notice.warning({
+          title: "只能上传一张头像"
+        });
+      }
+      return check;
     }
   },
   mounted() {}
@@ -561,6 +751,7 @@ html {
 }
 .layout .top-menu {
   position: relative;
+  z-index: 1000;
 }
 .layout .top-menu .welcome {
   position: absolute;
@@ -621,7 +812,7 @@ html {
   padding-top: 20px;
   line-height: 60px;
   position: relative;
-  z-index: 9999;
+  z-index: 999;
 }
 
 .layout .nav-menu {
@@ -733,5 +924,42 @@ html {
   font-size: 15px;
   padding: 35px;
   border: 1px solid #515a6e;
+}
+
+.demo-upload-list {
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  text-align: center;
+  line-height: 60px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  margin-right: 4px;
+}
+.demo-upload-list img {
+  width: 100%;
+  height: 100%;
+}
+.demo-upload-list-cover {
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.demo-upload-list:hover .demo-upload-list-cover {
+  display: block;
+}
+.demo-upload-list-cover i {
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 2px;
 }
 </style>

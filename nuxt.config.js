@@ -1,6 +1,5 @@
 module.exports = {
   router: {
-
     routes: [
       { name: "index", path: "/", component: "pages/index.vue" },
       {
@@ -28,8 +27,8 @@ module.exports = {
         name: "searchResultInfo",
         path: "/searchResultInfo",
         component: "pages/searchResultInfo/index.vue",
-	    meta: {requiresAuth: true}
-      },
+        meta: { requiresAuth: true }
+      }
     ]
   },
   /*
@@ -50,6 +49,7 @@ module.exports = {
   },
   plugins: [
     { src: "~plugins/iview", ssr: true },
+    { src: "~/plugins/localStorage.js", ssr: false },
     {
       src: "~/plugins/axios",
       ssr: false
@@ -57,7 +57,8 @@ module.exports = {
     {
       src: "~/plugins/common",
       ssr: false
-    }
+    },
+    { src: "~/plugins/localStorage.js", ssr: false }
   ],
   /*
    ** Customize the progress bar color
@@ -67,8 +68,8 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsSubDirectory: "static",
+    assetsPublicPath: "/",
     /*
      ** Run ESLint on save
      */
