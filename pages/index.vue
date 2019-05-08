@@ -123,7 +123,7 @@
                     <CellGroup v-if="fairInfos.length>0">
                       <Cell
                         :title="fair.fairName"
-                        v-for="fair in fairInfos.slice(0, 8)"
+                        v-for="fair in fairInfos"
                         :key="fair.fairInformationId"
                         :extra="dateFormat(fair.fairStartTime)"
                         :to="{path:'/fairInfo', query: { fair: JSON.stringify(fair) }}"
@@ -159,8 +159,8 @@ import { levelList, cycleList } from "~/plugins/common.json";
 
 export default {
   async asyncData({ app, error }) {
-    var { data } = await getData("/jm-fair/journal-fair/get/fairs", "get", {});
-    const fairInfos = data;
+    var { data } = await getData("/jm-fair/journal-fair/get/fairs", "get", {'pageNum':1 , 'pageSize':8});
+    const fairInfos = data.list;
     var { data } = await getData(
       "/jm-journal/journal-type/get/f-type",
       "get",

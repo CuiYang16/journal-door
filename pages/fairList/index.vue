@@ -8,7 +8,7 @@
     </div>
 
     <div class="fair-cell">
-      <Card title="书展信息" icon="ios-options" :bordered="false">
+      <Card title="书展信息" icon="ios-options">
         <CellGroup v-if="fairInfos.length>0">
           <Cell
             :title="fair.fairName"
@@ -20,6 +20,18 @@
         </CellGroup>
       </Card>
     </div>
+    <div class="page-info">
+        <Page
+        :total="pageInfo.total"
+        show-elevator
+        show-sizer
+        show-total
+        :current="pageInfo.currentPage"
+        :page-size="pageInfo.pageSize"
+        @on-change="pageChange"
+        @on-page-size-change="pageSizeChange"
+      />
+      </div>
   </div>
 </template>
 
@@ -36,24 +48,38 @@ import {
 export default {
   data() {
     return {
-      fairInfos: []
+      fairInfos: [],
+      pageInfo: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
     };
   },
   methods: {
-    async getFairList() {
+    async getFairList(pageNum, pageSize) {
       var { data } = await getData(
         "/jm-fair/journal-fair/get/fairs",
         "get",
-        {}
+        {pageNum, pageSize}
       );
-      this.fairInfos = data;
+      this.fairInfos = data.list;
+      this.pageInfo.currentPage = data.pageNum;
+      this.pageInfo.pageSize = data.pageSize;
+      this.pageInfo.total = data.total;
+    },
+    pageChange(value) {
+      this.getFairList(value,this.pageInfo.pageSize);
+    },
+    pageSizeChange(value) {
+       this.getFairList(this.pageInfo.currentPage,value);
     },
     dateFormat: function(value) {
       return dateFormat(value);
     },
   },
   created() {
-    this.getFairList();
+    this.getFairList(1,10);
   }
 };
 </script>
@@ -62,5 +88,14 @@ export default {
 .fair-list .bread-crumb {
   padding: 10px 25px;
   background-color: #f5f7f9;
+}
+
+.fair-list .fair-cell{
+    margin-top: 10px;
+}
+.page-info{
+    margin-top: 5px;
+    margin-bottom: 10px;
+  float: right;
 }
 </style>

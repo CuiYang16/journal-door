@@ -33,6 +33,11 @@ module.exports = {
         name: "fairList",
         path: "/fairList",
         component: "pages/fairList/index.vue",
+      },
+      {
+        name: "joinFairList",
+        path: "/joinFairList",
+        component: "pages/joinFairList/index.vue",
       }
     ]
   },

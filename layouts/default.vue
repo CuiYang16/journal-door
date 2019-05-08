@@ -78,6 +78,10 @@
                   <Icon type="ios-construct"/>
                   <nuxt-link to="/fairList">书展列表</nuxt-link>
                 </MenuItem>
+                <MenuItem name="6" v-show="getToken()!=null&&getToken()!=''">
+                  <Icon type="ios-construct"/>
+                  <nuxt-link to="/joinFairList">参加书展列表</nuxt-link>
+                </MenuItem>
               </div>
             </Menu>
           </template>
@@ -94,7 +98,7 @@
         </Row>
       </Content>
 
-      <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
+      <Footer class="layout-footer-center">2018-2019 &copy; cuiyang</Footer>
     </Layout>
     <BackTop></BackTop>
     <div class="modals">
@@ -251,6 +255,11 @@
       <Modal v-model="resetPwdModal" title="忘记密码" :mask-closable="false" width="470px">
         <div class="modal-content">
           <Form ref="resetPwdForm" :model="resetPwdForm" :rules="resetPwdRule" :label-width="80">
+            <FormItem prop="userName" label="用户名">
+              <Input type="text" v-model="resetPwdForm.userName" placeholder="请输入用户名">
+                <Icon type="ios-person-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
             <FormItem prop="userPwd" label="密码">
               <Input type="password" v-model="resetPwdForm.userPwd" placeholder="请输入密码">
                 <Icon type="ios-lock-outline" slot="prepend"></Icon>
@@ -295,7 +304,7 @@
 import { mapGetters } from "vuex";
 import getters from "~/store/getters";
 import { getData } from "~/plugins/axios.js";
-import { getToken} from "~/middleware/auth";
+import { getToken } from "~/middleware/auth";
 export default {
   computed: {
     ...mapGetters(["name", "avatar"])
@@ -364,6 +373,7 @@ export default {
         avatarName: ""
       },
       resetPwdForm: {
+        userName: "",
         userPwd: "",
         confirmPwd: ""
       },
@@ -456,6 +466,31 @@ export default {
         ]
       },
       resetPwdRule: {
+        userName: [
+          {
+            required: true,
+            validator: async (rule, value, callback) => {
+              var nPattern = /^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9]){4,16}$/;
+              let val = "";
+              await getData("/jm-user/user/validator-username", "get", {
+                userName: value
+              })
+                .then(res => {
+                  val = res.data.val;
+                })
+                .catch();
+              if (val == 0) {
+                callback(new Error("用户名不存在！"));
+              }
+              if (!nPattern.test(value)) {
+                callback(new Error("4-16位，可以包括字母，数字，汉字！"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur"
+          }
+        ],
         userPwd: [
           {
             required: true,
@@ -527,7 +562,7 @@ export default {
     }
   },
   methods: {
-    getToken(){
+    getToken() {
       return getToken();
     },
     userLogin() {
@@ -621,6 +656,23 @@ export default {
     resetPwdSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          this.resetPwdModal = false;
+          getData("/jm-user/user/update-pwd", "put", {
+            userName: this.resetPwdForm.userName,
+            userPwd: this.resetPwdForm.userPwd
+          })
+            .then(res => {
+              if (res.data == 1) {
+                this.$Message.success("修改密码成功!");
+              } else {
+                this.$Message.success("修改密码失败!");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+
+              this.$Message.success("修改密码失败!");
+            });
         }
       });
     },
