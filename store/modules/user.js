@@ -43,15 +43,15 @@ const actions = {
             commit("SET_AVATAR", "/avatar-img/" + res.data.avatar);
             commit("SET_NAME", userName);
           }
-          if (res.data.code == 50008) {
-            this.$Message.error("身份验证过期，请重新登录!");
+          if (res.data.code == 50008||res.data.code == 50001||res.data.code == 50014) {
+            this.$Message.error(res.data.message+"!");
           }
-          if (res.data.code == 50014) {
-            this.$Message.error("身份验证过期，请重新登录!");
-          }
+
           resolve();
         })
         .catch(error => {
+          console.log(error);
+          
           reject(error);
         });
     });

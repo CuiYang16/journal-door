@@ -214,7 +214,7 @@ export default {
         "post",
         {
           journalId: this.journalInfo.journalId,
-          userId: 1
+          token: getToken()
         }
       );
       if (data == 1) {

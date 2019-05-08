@@ -70,9 +70,13 @@
                   <Icon type="ios-construct"/>
                   <nuxt-link to="/journalList">杂志期刊列表</nuxt-link>
                 </MenuItem>
-                <MenuItem name="4">
+                <MenuItem name="4" v-show="getToken()!=null&&getToken()!=''">
                   <Icon type="ios-construct"/>
                   <nuxt-link to="/borrowInfo">借阅列表</nuxt-link>
+                </MenuItem>
+                <MenuItem name="5">
+                  <Icon type="ios-construct"/>
+                  <nuxt-link to="/fairList">书展列表</nuxt-link>
                 </MenuItem>
               </div>
             </Menu>
@@ -186,7 +190,8 @@
                 <Icon type="ios-mail-outline" slot="prepend"></Icon>
               </Input>
             </FormItem>
-            <FormItem label="用户头像">
+            <FormItem label="用户头像" prop="avatarName">
+              <Input type="text" v-model="registerForm.avatarName" style="display:none;"></Input>
               <template>
                 <div class="demo-upload-list" v-for="item in uploadList" :key="item.url">
                   <template v-if="item.status === 'finished'">
@@ -218,7 +223,7 @@
                     <Icon type="ios-camera" size="20"></Icon>
                   </div>
                 </Upload>
-                <Modal title="View Image" v-model="visible">
+                <Modal title="预览" v-model="visible">
                   <img :src="'/avatar-img/' + imgName" v-if="visible" style="width: 100%">
                 </Modal>
               </template>
@@ -290,6 +295,7 @@
 import { mapGetters } from "vuex";
 import getters from "~/store/getters";
 import { getData } from "~/plugins/axios.js";
+import { getToken} from "~/middleware/auth";
 export default {
   computed: {
     ...mapGetters(["name", "avatar"])
@@ -318,7 +324,7 @@ export default {
         callback();
       }
     };
-    const validateName = (rule, value, callback) => {
+    const validateName = async (rule, value, callback) => {
       var nPattern = /^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9]){4,16}$/;
       if (!nPattern.test(value)) {
         callback(new Error("4-16位，可以包括字母，数字，汉字！"));
@@ -354,7 +360,8 @@ export default {
         confirmPwd: "",
         userPhone: "",
         userEmail: "",
-        userSex: ""
+        userSex: "",
+        avatarName: ""
       },
       resetPwdForm: {
         userPwd: "",
@@ -387,7 +394,25 @@ export default {
         userName: [
           {
             required: true,
-            validator: validateName,
+            validator: async (rule, value, callback) => {
+              var nPattern = /^([\u4E00-\uFA29]|[\uE7C7-\uE7F3]|[a-zA-Z0-9]){4,16}$/;
+              let val = "";
+              await getData("/jm-user/user/validator-username", "get", {
+                userName: value
+              })
+                .then(res => {
+                  val = res.data.val;
+                })
+                .catch();
+              if (val == 1) {
+                callback(new Error("用户名已存在！"));
+              }
+              if (!nPattern.test(value)) {
+                callback(new Error("4-16位，可以包括字母，数字，汉字！"));
+              } else {
+                callback();
+              }
+            },
             trigger: "blur"
           }
         ],
@@ -425,6 +450,9 @@ export default {
             message: "请选择性别",
             trigger: "change"
           }
+        ],
+        avatarName: [
+          { required: true, message: "请上传头像", trigger: "change" }
         ]
       },
       resetPwdRule: {
@@ -499,6 +527,9 @@ export default {
     }
   },
   methods: {
+    getToken(){
+      return getToken();
+    },
     userLogin() {
       // this.loginModal = true;
       this.generatedCode();
@@ -536,9 +567,9 @@ export default {
               });
             })
             .catch(() => {
-              this.$Message.error("登录失败，请刷新重试!!");
+              this.$Message.error("登录失败，请确认用户信息!!");
+              this.generatedCode();
             });
-          this.$Message.success("登录成功!");
         } else {
           this.$Message.error("请正确填写登录信息!!");
         }
@@ -561,7 +592,21 @@ export default {
     registerSubmit(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          this.$Message.success("Success!");
+          getData("/jm-user/user/insert-door-user", "post", {
+            user: this.registerForm
+          })
+            .then(res => {
+              if (res.data != 0) {
+                this.$Message.success("注册成功!");
+                this.registerModal = false;
+                this.$nextTick(function() {
+                  this.$refs[name].resetFields();
+                });
+              }
+            })
+            .catch(error => {
+              this.$Message.error("注册失败，请刷新重试!");
+            });
         } else {
           this.$Message.error("请正确填写注册信息!");
         }
@@ -639,18 +684,19 @@ export default {
       this.visible = true;
     },
     handleRemove(file) {
-
-      getData("/jm-user/user/del-door-user", "delete", { fileName: file.name }).
-        then(res => {
-          if (res.data== 1) {
+      getData("/jm-user/user/del-door-user", "delete", { fileName: file.name })
+        .then(res => {
+          if (res.data == 1) {
             this.uploadList = [];
+            this.registerForm.avatarName = "";
           } else {
             this.$Notice.warning({
               title: "删除失败",
               desc: file.name + "删除失败，请刷新重试！"
             });
           }
-        }).catch(error => {
+        })
+        .catch(error => {
           this.$Notice.warning({
             title: "删除失败",
             desc: file.name + "删除失败，请刷新重试1！"
@@ -658,7 +704,7 @@ export default {
         });
     },
     handleSuccess(res, file) {
-      console.log(res);
+      this.registerForm.avatarName = res.str;
       this.uploadList = [];
       this.uploadList.push({
         url: "/avatar-img/" + res.str,

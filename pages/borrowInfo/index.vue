@@ -62,7 +62,7 @@
 </template>
 
 <script>
-
+import { getToken} from "~/middleware/auth";
 import { getData } from "~/plugins/axios.js";
 import {
   dateFormat,
@@ -126,7 +126,7 @@ export default {
             this.isOverdue = value;
             if (value == "1") {
               this.getBorrows(
-                1,
+              
                 1,
                 10,
                 1,
@@ -135,7 +135,7 @@ export default {
             }
             if (value == "0") {
               this.getBorrows(
-                1,
+               
                 1,
                 10,
                 0,
@@ -144,7 +144,7 @@ export default {
             }
             if (value == "") {
               this.getBorrows(
-                1,
+                
                 1,
                 10,
                 2,
@@ -188,7 +188,7 @@ export default {
             this.isPayment = value;
             if (value == "1") {
               this.getBorrows(
-                1,
+               
                 1,
                 10,
                 this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
@@ -197,7 +197,7 @@ export default {
             }
             if (value == "0") {
               this.getBorrows(
-                1,
+               
                 1,
                 10,
                 this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
@@ -206,7 +206,7 @@ export default {
             }
             if (value == "") {
               this.getBorrows(
-                1,
+              
                 1,
                 10,
                 this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
@@ -235,11 +235,11 @@ export default {
     };
   },
   methods: {
-    async getBorrows(userId, currentPage, pageSize, isOverdue, isPayment) {
+    async getBorrows(currentPage, pageSize, isOverdue, isPayment) {
       var { data } = await getData(
         "/jm-journal/journal-borrow/get-borrow",
         "get",
-        { userId, currentPage, pageSize, isOverdue, isPayment }
+        { token:getToken(), currentPage, pageSize, isOverdue, isPayment }
       );
       this.borrows = data.list;
       this.pageInfo.currentPage = data.pageNum;
@@ -259,7 +259,7 @@ export default {
       );
       if (data > 0) {
         this.getBorrows(
-          1,
+ 
           this.pageInfo.currentPage,
           this.pageInfo.pageSize,
           this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
@@ -278,7 +278,7 @@ export default {
     },
     pageChange(value) {
       this.getBorrows(
-        1,
+
         value,
         this.pageInfo.pageSize,
         this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
@@ -287,7 +287,7 @@ export default {
     },
     pageSizeChange(value) {
       this.getBorrows(
-        1,
+ 
         this.pageInfo.currentPage,
         value,
         this.isOverdue == "1" ? 1 : this.isOverdue == "0" ? 0 : 2,
@@ -310,7 +310,7 @@ export default {
     }
   },
   created() {
-    this.getBorrows(1, 1, 10, 2, 2);
+    this.getBorrows( 1, 10, 2, 2);
   }
 };
 </script>

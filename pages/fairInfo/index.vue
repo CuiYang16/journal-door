@@ -3,6 +3,7 @@
     <div class="bread-crumb">
       <Breadcrumb>
         <BreadcrumbItem to="/">首页</BreadcrumbItem>
+        <BreadcrumbItem to="/fairList">书展列表</BreadcrumbItem>
         <BreadcrumbItem>书展简介</BreadcrumbItem>
       </Breadcrumb>
     </div>
@@ -78,7 +79,7 @@ export default {
         var { data } = await getData(
           "/jm-fair/journal-fair/insert/fair-user",
           "post",
-          { fairInformationId: this.fairInfo.fairInformationId, userId: 1 }
+          { fairInformationId: this.fairInfo.fairInformationId, token: getToken() }
         );
         if (data == 50001) {
           this.$Notice.error({

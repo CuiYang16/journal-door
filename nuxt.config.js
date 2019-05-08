@@ -28,6 +28,11 @@ module.exports = {
         path: "/searchResultInfo",
         component: "pages/searchResultInfo/index.vue",
         meta: { requiresAuth: true }
+      },
+      {
+        name: "fairList",
+        path: "/fairList",
+        component: "pages/fairList/index.vue",
       }
     ]
   },
