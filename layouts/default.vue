@@ -12,7 +12,7 @@
                   <Avatar :src="avatar" size="small"/>
                   &nbsp;{{name}}
                 </template>
-                <MenuItem name="4-1">个人中心</MenuItem>
+                <MenuItem name="4-1" @click.native="userInfoCenter">个人中心</MenuItem>
                 <MenuItem name="4-2" @click.native="loginOut">退出登录</MenuItem>
               </Submenu>
             </div>
@@ -23,12 +23,7 @@
         <div class="content-row">
           <Row :gutter="120">
             <Col span="3" offset="2">
-              <img
-                :src="require('E:/journal-img/2019-04-30_153151.png')"
-                alt="require('E:/img/e1cf12c07bf6458992569e67927d767e.png')"
-                width="200"
-                height="80"
-              >
+              <img :src="'/journal-img/2019-04-30_153151.png'" alt="无图片" width="200" height="80">
             </Col>
             <Col span="14" offset="1">
               <div class="search">
@@ -296,6 +291,80 @@
           >确认修改</Button>
         </div>
       </Modal>
+
+      <!-- 个人信息 -->
+      <Modal v-model="userInfoModal" title="个人中心" :mask-closable="false" width="470px">
+        <div class="modal-content">
+          <Form ref="userInfoForm" :model="userInfoForm" :rules="userInfoRule" :label-width="80">
+            <FormItem prop="userPwd" label="密码">
+              <Input type="password" v-model="userInfoForm.userPwd" placeholder="请输入密码">
+                <Icon type="ios-lock-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem prop="confirmPwd" label="确认密码">
+              <Input type="password" v-model="userInfoForm.confirmPwd" placeholder="请输入确认密码">
+                <Icon type="ios-lock-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem prop="userPhone" label="联系电话">
+              <Input type="text" v-model="userInfoForm.userPhone" placeholder="请输入联系电话">
+                <Icon type="ios-call-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem prop="userEmail" label="邮箱">
+              <Input type="text" v-model="userInfoForm.userEmail" placeholder="请输入邮箱">
+                <Icon type="ios-mail-outline" slot="prepend"></Icon>
+              </Input>
+            </FormItem>
+            <FormItem label="用户头像" prop="avatarName">
+              <Input type="text" v-model="userInfoForm.avatarName" style="display:none;"></Input>
+              <template>
+                <div class="demo-upload-list" v-for="item in userInfoList" :key="item.url">
+                  <template v-if="item.status === 'finished'">
+                    <img :src="item.url" width="60" height="60">
+                    <div class="demo-upload-list-cover">
+                      <Icon type="ios-eye-outline" @click.native="handleUserView(item.name)"></Icon>
+                      <Icon type="ios-trash-outline" @click.native="handleUserRemove(item)"></Icon>
+                    </div>
+                  </template>
+                  <template v-else v-show="uploadList.length==0">
+                    <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+                  </template>
+                </div>
+                <Upload
+                  ref="upload2"
+                  :show-upload-list="false"
+                  :default-file-list="userInfoList"
+                  :on-success="handleUserSuccess"
+                  :format="['jpg','jpeg','png']"
+                  :max-size="512"
+                  :on-format-error="handleFormatError"
+                  :on-exceeded-size="handleMaxSize"
+                  :before-upload="handleBeforeUpload"
+                  type="drag"
+                  action="http://127.0.0.1:8888/jm-user/user/upload/door-user-img"
+                  style="display: inline-block;width:58px;"
+                >
+                  <div style="width: 58px;height:58px;line-height: 58px;">
+                    <Icon type="ios-camera" size="20"></Icon>
+                  </div>
+                </Upload>
+                <Modal title="预览" v-model="userVisible">
+                  <img :src="'/avatar-img/' + userImgName" v-if="userVisible" style="width: 100%">
+                </Modal>
+              </template>
+            </FormItem>
+          </Form>
+        </div>
+        <div slot="footer">
+          <Button
+            type="primary"
+            long
+            @click="userInfoSubmit('userInfoForm')"
+            style="background-color: #2b85e4;border-color: #2b85e4;"
+          >修改个人信息</Button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
@@ -376,6 +445,15 @@ export default {
         userName: "",
         userPwd: "",
         confirmPwd: ""
+      },
+      userInfoForm: {
+        userName: "",
+        userPwd: "",
+        confirmPwd: "",
+        userPhone: "",
+        userEmail: "",
+        userSex: "",
+        avatarName: ""
       },
       loginRule: {
         userName: [
@@ -465,6 +543,47 @@ export default {
           { required: true, message: "请上传头像", trigger: "change" }
         ]
       },
+      userInfoRule: {
+        userPwd: [
+          {
+            required: true,
+            validator: validatePwd,
+            trigger: "blur"
+          }
+        ],
+        confirmPwd: [
+          {
+            required: true,
+            validator: (rule, value, callback) => {
+              var pPattern = /^.*(?=.{8,12})(?=.*\d)(?=.*[a-zA-Z])(?=.*[!@#$%^&*?_]).*$/;
+              if (!pPattern.test(value) || this.userInfoForm.userPwd != value) {
+                callback(new Error("密码不一致，请重新确认！"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur"
+          }
+        ],
+        userPhone: [
+          {
+            required: true,
+            validator: validatePhone,
+            trigger: "blur"
+          }
+        ],
+        userEmail: [
+          {
+            required: true,
+            validator: validateEmail,
+            trigger: "blur"
+          }
+        ],
+
+        avatarName: [
+          { required: true, message: "请上传头像", trigger: "change" }
+        ]
+      },
       resetPwdRule: {
         userName: [
           {
@@ -532,10 +651,14 @@ export default {
       loginModal: false,
       registerModal: false,
       resetPwdModal: false,
+      userInfoModal: false,
       ccode: "",
       defaultList: [],
+      userInfoList: [],
       imgName: "",
       visible: false,
+      userImgName: "",
+      userVisible: false,
       uploadList: [],
       file: ""
     };
@@ -676,6 +799,46 @@ export default {
         }
       });
     },
+    userInfoCenter() {
+      this.userInfoModal = true;
+      getData("/jm-user/user/get-user-info", "get", { token: getToken() })
+        .then(res => {
+          this.userInfoForm = res.data;
+          this.userInfoList = [];
+          this.userInfoList.push({
+            name: res.data.userHeadPortrait,
+            url: "/avatar-img/" + res.data.userHeadPortrait,
+            status: "finished"
+          });
+          this.userInfoForm.avatarName = res.data.userHeadPortrait;
+        })
+        .catch(error => {
+          console.log(error);
+
+          this.$Message.success("获取个人信息失败!");
+        });
+    },
+    userInfoSubmit(name) {
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.userInfoModal = false;
+          getData("/jm-user/user/update-door-user", "put", {
+            user: this.userInfoForm
+          })
+            .then(res => {
+              if (res.data == 1) {
+                this.loginOut();
+                this.$Message.success("修改个人信息成功,请重新登录!");
+              }
+            })
+            .catch(error => {
+              console.log(error);
+
+              this.$Message.success("修改个人信息失败!");
+            });
+        }
+      });
+    },
     generatedCode() {
       const random = [
         0,
@@ -735,12 +898,38 @@ export default {
       this.imgName = name;
       this.visible = true;
     },
+    handleUserView(name) {
+      this.userImgName = name;
+      this.userVisible = true;
+    },
     handleRemove(file) {
       getData("/jm-user/user/del-door-user", "delete", { fileName: file.name })
         .then(res => {
           if (res.data == 1) {
             this.uploadList = [];
             this.registerForm.avatarName = "";
+          } else {
+            this.$Notice.warning({
+              title: "删除失败",
+              desc: file.name + "删除失败，请刷新重试！"
+            });
+          }
+        })
+        .catch(error => {
+          this.$Notice.warning({
+            title: "删除失败",
+            desc: file.name + "删除失败，请刷新重试1！"
+          });
+        });
+    },
+    handleUserRemove(file) {
+      getData("/jm-user/user/del-door-user-img", "delete", {
+        fileName: file.name
+      })
+        .then(res => {
+          if (res.data == 1) {
+            this.userInfoList = [];
+            this.userInfoForm.avatarName = "";
           } else {
             this.$Notice.warning({
               title: "删除失败",
@@ -764,10 +953,19 @@ export default {
         status: "finished"
       });
     },
+    handleUserSuccess(res, file) {
+      this.userInfoForm.avatarName = res.str;
+      this.userInfoList = [];
+      this.userInfoList.push({
+        url: "/avatar-img/" + res.str,
+        name: res.str,
+        status: "finished"
+      });
+    },
     handleFormatError(file) {
       this.$Notice.warning({
         title: "The file format is incorrect",
-        desc: file.name + " 类型不正确，直接搜jpg/jpeg/png"
+        desc: file.name + " 类型不正确，只接受jpg/jpeg/png"
       });
     },
     handleMaxSize(file) {
