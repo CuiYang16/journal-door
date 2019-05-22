@@ -18,7 +18,7 @@
                     <div class="show-img-top">
                       <img
                         :src="'/journal-img/'+(showImgName==''?journalInfo.journalImg:showImgName)"
-                        alt="asdas"
+                        alt="asdas" width="330" height="420"
                       >
                     </div>
                     <div class="show-img-bottom">
@@ -42,9 +42,17 @@
                   <div class="info-right">
                     <h1>{{journalInfo.journalName}}</h1>
                     <ul>
+                      <li v-show="journalInfo.author">
+                        <span class="info-name-span">主管单位：</span>
+                        <Tooltip :content="journalInfo.author"  placement="top">
+                        {{journalInfo.author}}
+                        </Tooltip>
+                      </li>
                       <li v-show="journalInfo.journalHost">
                         <span class="info-name-span">主办单位：</span>
+                        <Tooltip :content="journalInfo.journalHost"  placement="top">
                         {{journalInfo.journalHost}}
+                        </Tooltip>
                       </li>
                       <li v-show="journalInfo.publishingHouse">
                         <span class="info-name-span">出版社：</span>
@@ -115,10 +123,7 @@
                         <span class="info-name-span">国外杂志：</span>
                         {{journalInfo.isForeign==true?'是':'否'}}
                       </li>
-                      <li v-show="journalInfo.author">
-                        <span class="info-name-span">杂志作者：</span>
-                        {{journalInfo.author}}
-                      </li>
+                      
                     </ul>
                     <div>
                       <span class="info-name-span">杂志描述：</span>
@@ -278,6 +283,7 @@ export default {
   },
   created() {
     this.journalInfo = JSON.parse(this.$route.query.journal);
+    this.showImgName='';
     this.getBorrowList();
   },
 
@@ -355,14 +361,19 @@ export default {
   width: 250px;
   line-height: 30px;
   display: inline-block;
+  overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .journal-info .journal-show .info .info-right .info-desc {
   min-height: 185px;
+  max-height: 185px;
   float: right;
   width: 430px;
   background-color: #f8f8f9;
   border-radius: 5px;
+  overflow-y: auto;
 }
 
 .journal-info .journal-show .info .info-right .borrow-btn {
