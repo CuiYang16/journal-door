@@ -4,7 +4,8 @@ export default ({ store }) => {
   window.onNuxtReady(() => {
     createPersistedState({
       key: "yourkey",
-      paths: []
+      paths: [],
+      storage: window.sessionStorage
     })(store);
   });
 };

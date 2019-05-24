@@ -48,7 +48,7 @@
             </Col>
             <Col span="9">
               <div class="fair-img">
-                <img :src="'/journal-img/'+fairInfo.fairImg" alt="asdasd" width="350" height="220">
+                <img :src="'/fair-img/'+fairInfo.fairImg" alt="asdasd" width="350" height="220">
               </div>
             </Col>
           </Row>

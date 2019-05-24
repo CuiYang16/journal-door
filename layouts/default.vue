@@ -23,7 +23,7 @@
         <div class="content-row">
           <Row :gutter="120">
             <Col span="3" offset="2">
-              <img :src="'/journal-img/2019-04-30_153151.png'" alt="无图片" width="200" height="80">
+              <img :src="'/slide-img/logo.png'" alt="无图片" width="200" height="80">
             </Col>
             <Col span="14" offset="1">
               <div class="search">
@@ -54,28 +54,29 @@
                   name="1"
                   style="padding:0 36px;border-left:1px solid #ffffff;border-right:1px solid #ffffff;background-color:#808695"
                 >
-                  <Icon type="ios-people"/>全部期刊杂志分类
+                  <Icon type="ios-apps" />全部期刊杂志分类
                 </MenuItem>
                 <MenuItem name="2" style="margin-left:10px">
-                  <Icon type="ios-people"/>
+                  <Icon type="ios-home" />
                   <nuxt-link to="/">首页</nuxt-link>
                 </MenuItem>
 
                 <MenuItem name="3">
-                  <Icon type="ios-construct"/>
-                  <nuxt-link to="/journalList">杂志期刊列表</nuxt-link>
+                 <Icon type="ios-build" />
+                  <nuxt-link to="/journalList">杂志期刊分类</nuxt-link>
+                </MenuItem>
+                
+                <MenuItem name="5">
+                  <Icon type="md-list-box" />
+                  <nuxt-link to="/fairList">书展信息</nuxt-link>
                 </MenuItem>
                 <MenuItem name="4" v-show="getToken()!=null&&getToken()!=''">
-                  <Icon type="ios-construct"/>
-                  <nuxt-link to="/borrowInfo">借阅列表</nuxt-link>
-                </MenuItem>
-                <MenuItem name="5">
-                  <Icon type="ios-construct"/>
-                  <nuxt-link to="/fairList">书展列表</nuxt-link>
+                  <Icon type="ios-cart" />
+                  <nuxt-link to="/borrowInfo">已借阅</nuxt-link>
                 </MenuItem>
                 <MenuItem name="6" v-show="getToken()!=null&&getToken()!=''">
-                  <Icon type="ios-construct"/>
-                  <nuxt-link to="/joinFairList">参加书展列表</nuxt-link>
+                  <Icon type="ios-book" />
+                  <nuxt-link to="/joinFairList">已参加书展</nuxt-link>
                 </MenuItem>
               </div>
             </Menu>

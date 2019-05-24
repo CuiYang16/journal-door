@@ -41,7 +41,7 @@
                 <Col span="15">
                   <div class="info-right">
                     <h1>{{journalInfo.journalName}}</h1>
-                    <ul>
+                    <ul ref="infoUl">
                       <li v-show="journalInfo.author">
                         <span class="info-name-span">主管单位：</span>
                         <Tooltip :content="journalInfo.author"  placement="top">
@@ -123,11 +123,14 @@
                         <span class="info-name-span">国外杂志：</span>
                         {{journalInfo.isForeign==true?'是':'否'}}
                       </li>
-                      
+                      <li v-show="journalInfo.price">
+                        <span class="info-name-span">价格：</span>
+                        {{journalInfo.price}}
+                      </li>
                     </ul>
                     <div>
                       <span class="info-name-span">杂志描述：</span>
-                      <div v-html="journalInfo.description" class="info-desc"></div>
+                      <div v-html="journalInfo.description" class="info-desc" ref="infoDesc"></div>
                     </div>
 
                     <Button type="primary" long class="borrow-btn" @click="borrowConfirm" :disabled="journalInfo.inventory<=0">借阅</Button>
@@ -285,11 +288,20 @@ export default {
     this.journalInfo = JSON.parse(this.$route.query.journal);
     this.showImgName='';
     this.getBorrowList();
+     
   },
-
+  mounted() {
+    var ulHeight=this.$refs.infoUl.offsetHeight;
+    //console.log(560-42-ulHeight-32-10);
+    this.$refs.infoDesc.style.height=(560-42-ulHeight-32-30)+'px';
+  },
   beforeRouteUpdate(to, from, next) {
     this.journalInfo = JSON.parse(to.query.journal);
     next();
+  },
+  updated(){
+    var ulHeight=this.$refs.infoUl.offsetHeight;
+    this.$refs.infoDesc.style.height=(560-42-ulHeight-32-30)+'px';
   }
 };
 </script>
@@ -367,8 +379,7 @@ export default {
 }
 
 .journal-info .journal-show .info .info-right .info-desc {
-  min-height: 185px;
-  max-height: 185px;
+  
   float: right;
   width: 430px;
   background-color: #f8f8f9;

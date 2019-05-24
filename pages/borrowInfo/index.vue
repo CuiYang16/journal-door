@@ -28,7 +28,7 @@
 
         <template slot-scope="{ row }" slot="journal">{{ row.journalDetails.journalName }}</template>
         <template slot-scope="{ row, index }" slot="action">
-          <Button type="error" size="small" @click="delBorrow(row)">删除</Button>
+          <Button type="error" size="small" @click="delBorrow(row)" :disabled="row.realityReturn==null">删除</Button>
         </template>
       </Table>
     </div>

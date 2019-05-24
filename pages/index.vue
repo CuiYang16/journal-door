@@ -288,14 +288,14 @@ export default {
   z-index: 666;
 }
 .home-center .content-main {
-  max-height: 1230px;
+  max-height: 1040px;
   border: 1px solid #e8eaec;
 }
 
 .home-center .content-main .cell {
   border: 1px solid #e8eaec;
-  min-height: 1220px;
-  max-height: 1220px;
+  min-height: 1039px;
+  max-height: 1039px;
   overflow-y: auto;
 }
 .home-center .content-right .type-menu {
