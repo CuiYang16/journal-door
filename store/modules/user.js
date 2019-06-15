@@ -43,7 +43,7 @@ const actions = {
             commit("SET_AVATAR", "/avatar-img/" + res.data.avatar);
             commit("SET_NAME", userName);
           }
-          if (res.data.code == 50008||res.data.code == 50001||res.data.code == 50014) {
+          if (res.data.code == 50008||res.data.code == 50001||res.data.code == 50014||res.data.code == 50000) {
             this.$Message.error(res.data.message+"!");
           }
 
