@@ -468,7 +468,7 @@ export default {
 }
 .journal-list .search-result .result-info .info-li-detail ul li {
   display: inline-block;
-  width: 220px;
+  width: 40%;
   line-height: 20px;
 }
 
@@ -532,6 +532,10 @@ export default {
 .journal-list .search-result .result-info .info-ul .info-li .info-li-img {
   width: 20%;
   float: left;
+}
+.journal-list .search-result .result-info .info-ul .info-li .info-li-img img{
+      max-width: 100%;
+    max-height: 100%;
 }
 .journal-list .search-result .result-info .info-ul .info-li .info-li-detail {
 }

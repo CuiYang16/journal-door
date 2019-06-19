@@ -375,6 +375,10 @@ export default {
   width: 30%;
   float: left;
 }
+.home-center .hot-recommend .hot-show-li .hot-show-li-img img{
+      max-width: 100%;
+    max-height: 100%;
+}
 .home-center .hot-recommend .hot-show-li .hot-show-li-char {
   padding-left: 10px;
   width: 65%;
@@ -403,4 +407,3 @@ export default {
   white-space: nowrap;
 }
 </style>
-

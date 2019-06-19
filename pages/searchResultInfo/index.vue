@@ -236,6 +236,11 @@ export default {
   width: 20%;
   float: left;
 }
+
+.search-info .result-info .info-ul .info-li .info-li-img img{
+  max-width: 100%;
+    max-height: 100%;
+}
 .search-info .result-info .info-ul .info-li .info-li-detail {
 }
 .search-info .result-info .info-ul .info-li .info-li-detail .detail-title {
@@ -255,7 +260,7 @@ export default {
 }
 .search-info .result-info .info-li-detail ul li {
   display: inline-block;
-  width: 220px;
+  width: 40%;
   line-height: 20px;
 }
 .search-info .bread-crumb {

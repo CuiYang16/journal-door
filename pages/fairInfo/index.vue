@@ -148,17 +148,19 @@ export default {
 }
 .fair-info .fair-card .fair-desc .desc-info {
   float: right;
-  width: 1100px;
+  width: 90%;
   max-height: 300px;
   background-color: #f8f8f9;
   border-radius: 5px;
 }
 .fair-info .fair-card .fair-img {
-  width: 450px;
+  width: 100%;
   padding: 0 50px 10px 50px;
   border-left: 1px solid #e8eaec;
 }
-
+.fair-info .fair-card .fair-img img{
+  max-width: 110%;
+}
 .fair-info .fair-card .fair-item {
   padding: 20px 0;
 }
@@ -175,6 +177,6 @@ export default {
 .fair-info .fair-card .fair-item ul li {
   display: inline-block;
   line-height: 30px;
-  width: 360px;
+  width: 50%;
 }
 </style>

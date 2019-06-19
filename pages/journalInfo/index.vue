@@ -338,14 +338,15 @@ export default {
   border-top: 1px solid #e8eaec;
 }
 .journal-info .journal-show .info .show-img .show-img-bottom {
-  padding: 10px 0;
-  border: 2px solid #e8eaec;
+  padding: 10px 8px;
+  border: 1px solid #e8eaec;
   height: 107px;
+  overflow-y: auto;
 }
 .journal-info .journal-show .info .show-img .show-img-bottom img {
   width: 45px;
   height: 70px;
-  margin: 5px 10px;
+  margin: 4px 8px;
   border: 2px solid #808695;
 }
 .journal-info .journal-show .info .show-img .show-img-top img {
@@ -370,7 +371,7 @@ export default {
   list-style: none;
 }
 .journal-info .journal-show .info .info-right ul li {
-  width: 250px;
+  width: 50%;
   line-height: 30px;
   display: inline-block;
   overflow: hidden;
@@ -381,14 +382,14 @@ export default {
 .journal-info .journal-show .info .info-right .info-desc {
   
   float: right;
-  width: 430px;
+  width: 83%;
   background-color: #f8f8f9;
   border-radius: 5px;
   overflow-y: auto;
 }
 
 .journal-info .journal-show .info .info-right .borrow-btn {
-  width: 535px;
+  width: 95%;
   position: absolute;
   bottom: 0;
 }
